@@ -1,0 +1,1084 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Ruminix | Study Smarter</title>
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+<script src="https://unpkg.com/mammoth/mammoth.browser.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.7.1/jszip.min.js"></script>
+<style>
+:root{
+  --blue:#2563eb;
+  --indigo:#4f46e5;
+  --bg:#f5f7fb;
+  --card:#ffffff;
+  --border:#e5e7eb;
+  --text:#0f172a;
+  --muted:#64748b;
+}
+
+/* COMMON RESET */
+*{margin:0;padding:0;box-sizing:border-box;font-family:Inter,system-ui,sans-serif}
+
+/* BODY */
+body{
+  height:100vh;
+  color:var(--text);
+  background-color: var(--bg);
+  background-image:
+    linear-gradient(rgba(15,23,42,0.09) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(15,23,42,0.09) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+/* APP LAYOUT */
+.app{
+  display:flex;
+  height:100vh;
+}
+
+/* HIDDEN */
+.hidden{display:none}
+
+/* SIDEBAR */
+.sidebar{
+  width:240px;background:white;border-right:1px solid var(--border);
+  padding:30px 20px;display:flex;flex-direction:column;justify-content:space-between
+}
+.logo{font-size:22px;font-weight:700;margin-bottom:40px}
+.nav a{
+  display:block;padding:12px 16px;margin-bottom:8px;border-radius:12px;
+  color:var(--muted);cursor:pointer;text-decoration:none;font-weight:500
+}
+.nav a.active,.nav a:hover{background:var(--blue);color:white}
+.streak{background:var(--blue);color:white;padding:20px;border-radius:18px;font-weight:600}
+.streak span{font-size:28px}
+
+/* MAIN */
+.main{flex:1;padding:40px;position:relative}
+.page h1{font-size:36px;margin-bottom:30px}
+
+/* DASHBOARD */
+.cards{display:grid;grid-template-columns:1fr 1fr;gap:30px;max-width:900px}
+.focus-card{
+  background:var(--card);padding:30px;border-radius:30px;
+  box-shadow:0 20px 40px rgba(0,0,0,.05)
+}
+.focus-card p{color:var(--muted);font-size:13px;font-weight:600}
+.focus-card h2{font-size:64px;color:var(--blue)}
+.deep-work{
+  background:linear-gradient(135deg,var(--indigo),var(--blue));
+  color:white;padding:40px;border-radius:30px;
+  box-shadow:0 25px 50px rgba(79,70,229,.35)
+}
+.deep-work button{
+  background:white;color:var(--indigo);
+  border:none;padding:12px 26px;border-radius:14px;font-weight:600;cursor:pointer
+}
+.upcoming-section{
+  margin-top:40px;
+  background:#ffffff;
+  padding:20px;
+  border-radius:12px;
+  box-shadow:0 4px 12px rgba(0,0,0,0.05);
+}
+
+.upcoming-section h2{
+  margin-bottom:15px;
+}
+
+.upcoming-task{
+  padding:12px;
+  border-bottom:1px solid #eee;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.upcoming-task:last-child{
+  border-bottom:none;
+}
+
+.upcoming-task small{
+  color:#777;
+}
+
+/* COMMON BOX & BUTTONS */
+.box{
+  background:white;padding:30px;border-radius:24px;max-width:700px;
+  box-shadow:0 15px 30px rgba(0,0,0,.05)
+}
+button.primary{
+  background:var(--blue);color:white;border:none;
+  padding:10px 18px;border-radius:10px;cursor:pointer
+}
+input,textarea{
+  width:100%;padding:10px;margin:6px 0;
+  border-radius:8px;border:1px solid var(--border)
+}
+
+/* SUBTOPICS */
+.study-card{
+  border:1px solid var(--border);
+  border-radius:18px;
+  padding:22px 24px;
+  margin-top:20px;
+  background:var(--card);
+  transition:.2s ease;
+}
+.study-card:hover{
+  box-shadow:0 8px 20px rgba(0,0,0,.06);
+}
+.study-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  cursor:pointer;
+}
+.study-title{
+  font-size:18px;
+  font-weight:600;
+}
+.study-meta{
+  font-size:14px;
+  color:var(--blue);
+  margin-top:6px;
+  font-weight:500;
+}
+.progress-bar{
+  height:6px;
+  background:#e5e7eb;
+  border-radius:6px;
+  margin-top:14px;
+  overflow:hidden;
+}
+.progress-fill{
+  height:100%;
+  width:0%;
+  background:var(--blue);
+}
+.study-content{
+  margin-top:16px;
+  display:none;
+}
+.study-content ul{
+  margin-left:18px;
+  color:var(--muted);
+  line-height:1.7;
+}
+.study-card.open .study-content{
+  display:block;
+}
+.arrow{
+  transition: .3s ease;
+}
+.study-card.open .arrow{
+  transform: rotate(180deg);
+}
+
+/* TIMER */
+.timer{font-size:64px;text-align:center;margin:20px 0;color:var(--indigo)}
+.controls{display:flex;justify-content:center;gap:12px;margin-bottom:20px}
+.controls button{
+  background:var(--indigo);color:white;border:none;
+  padding:12px 20px;border-radius:12px;cursor:pointer
+}
+
+/* TASKS */
+.task{
+  border:1px solid var(--border);padding:14px;
+  border-radius:12px;margin-top:10px
+}
+
+/* FLOATING AI BUTTON */
+.ai-btn{
+  position:fixed;
+  bottom:24px;
+  right:24px;
+  background:var(--indigo);
+  color:white;
+  padding:14px 18px;
+  border-radius:999px;
+  font-weight:600;
+  cursor:pointer;
+  box-shadow:0 10px 25px rgba(0,0,0,.2);
+  z-index:1000;
+}
+
+/* AI PANEL */
+.ai-panel{
+  position:fixed;
+  top:0;
+  right:-360px;
+  width:360px;
+  height:100vh;
+  background:white;
+  box-shadow:-10px 0 30px rgba(0,0,0,.15);
+  padding:20px;
+  transition:.4s ease;
+  z-index:1001;
+  display:flex;
+  flex-direction:column;
+}
+.ai-panel.open{ right:0; }
+.ai-chat{
+  background:#f1f5f9;
+  flex:1;
+  border-radius:18px;
+  padding:16px;
+  overflow-y:auto;
+  display:flex;
+  flex-direction:column;
+}
+.ai-placeholder{
+  color:#94a3b8;
+  text-align:center;
+  font-size:14px;
+  margin-top:80px;
+}
+.ai-box{
+  position: relative;
+}
+/* CLOSE BUTTON */
+.close-ai{
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+  color: var(--muted);
+}
+.close-ai:hover{
+  color: var(--blue);
+}
+
+.user-msg{
+  background: var(--blue);
+  color: white;
+  padding: 10px 14px;
+  border-radius: 16px;
+  margin: 8px 0;
+  align-self: flex-end;
+  max-width: 80%;
+}
+
+.ai-msg{
+  background: white;
+  padding: 12px 16px;
+  border-radius: 16px;
+  margin: 8px 0;
+  max-width: 85%;
+  box-shadow: 0 4px 12px rgba(0,0,0,.08);
+}
+
+.know-more{
+  margin-top: 10px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+/* TOP RIGHT PROFILE BUTTON */
+.topbar{
+  position:absolute;
+  top:30px;
+  right:40px;
+}
+.profile-btn{
+  background:white;
+  padding:10px 18px;
+  border-radius:12px;
+  border:1px solid var(--border);
+  cursor:pointer;
+  font-weight:500;
+  box-shadow:0 10px 20px rgba(0,0,0,.05);
+}
+.profile-btn:hover{
+  background:var(--blue);
+  color:white;
+}
+
+/* 🔔 NOTIFICATION TOAST */
+.notification {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  background: linear-gradient(135deg, var(--indigo), var(--blue));
+  color: white;
+  padding: 14px 20px;
+  border-radius: 14px;
+  font-weight: 500;
+  box-shadow: 0 8px 25px rgba(0,0,0,.15);
+  z-index: 9999;
+  opacity: 0;
+  pointer-events: none;
+  transition: 0.4s ease;
+}
+.notification.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+/* TASK MODAL OVERLAY */
+.task-modal{
+  position: fixed;
+  inset: 0;                     /* better than top/left/width/height */
+  background: rgba(15,23,42,.6); /* darker overlay */
+  backdrop-filter: blur(6px);    /* premium blur */
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 99999;                /* ensure it’s above everything */
+}
+
+/* MODAL CONTENT */
+.task-modal-content{
+  background:white;
+  width:500px;
+  max-height:70vh;
+  overflow-y:auto;
+  padding:30px;
+  border-radius:24px;
+  box-shadow:0 20px 50px rgba(0,0,0,.2);
+  position:relative;
+  animation:fadeIn .25s ease;
+}
+
+/* CLOSE BUTTON */
+.close-modal{
+  position:absolute;
+  top:18px;
+  right:18px;
+  background:none;
+  border:none;
+  font-size:18px;
+  cursor:pointer;
+  color:var(--muted);
+}
+
+.close-modal:hover{
+  color:var(--blue);
+}
+.settings-btn{
+  background:white;
+  padding:10px 18px;
+  border-radius:12px;
+  border:1px solid var(--border);
+  cursor:pointer;
+  font-weight:500;
+  margin-left:10px;
+  box-shadow:0 10px 20px rgba(0,0,0,.05);
+}
+
+.settings-btn:hover{
+  background:var(--blue);
+  color:white;
+}
+/* SETTINGS CARD */
+.settings-card{
+  position:fixed;
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-50%);
+  background:white;
+  padding:28px;
+  border-radius:24px;
+  box-shadow:0 25px 60px rgba(0,0,0,.12);
+  width:380px;
+  z-index:2000;
+}
+
+.settings-card h2{
+  margin-bottom:22px;
+  font-size:22px;
+  color:var(--indigo);
+  text-align:center;
+}
+
+.setting-group{
+  margin-bottom:18px;
+}
+
+.setting-group label{
+  display:block;
+  font-size:13px;
+  font-weight:600;
+  color:var(--muted);
+  margin-bottom:6px;
+}
+
+.setting-group input[type="number"],
+.setting-group select{
+  width:100%;
+  padding:10px 12px;
+  border-radius:10px;
+  border:1px solid var(--border);
+  font-size:14px;
+}
+
+/* Proper toggle alignment */
+.setting-group.toggle label{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  font-size:14px;
+  font-weight:500;
+  color:var(--text);
+  cursor:pointer;
+}
+
+.setting-group.toggle input[type="checkbox"]{
+  width:16px;
+  height:16px;
+  margin:0;
+}
+
+/* Save button styling */
+.settings-card{
+  position:fixed;
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-50%);
+  background:white;
+  padding:20px;              /* reduced padding */
+  border-radius:20px;
+  box-shadow:0 20px 50px rgba(0,0,0,.1);
+  width:360px;               /* slightly smaller width */
+  max-height:90vh;           /* prevents overflow */
+  overflow-y:auto;           /* scroll if needed */
+  z-index:2000;
+}
+
+.settings-card h2{
+  margin-bottom:16px;        /* reduced spacing */
+  font-size:20px;
+  text-align:center;
+  color:var(--indigo);
+}
+
+.setting-group{
+  margin-bottom:14px;        /* slightly tighter spacing */
+}
+
+.settings-card button{
+  width:100%;
+  margin-top:12px;
+  padding:9px;
+  border:none;
+  border-radius:12px;
+  background:var(--blue);
+  color:white;
+  font-weight:600;
+  cursor:pointer;
+}
+
+.settings-card button:hover{
+  opacity:.9;
+}
+.toggle label{
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+@keyframes fadeIn{
+  from{transform:scale(.95);opacity:0}
+  to{transform:scale(1);opacity:1}
+}
+</style>
+</head>
+<body>
+
+<div id="app" class="app">
+  <div class="sidebar">
+    <div>
+      <div class="logo">Ruminix</div>
+      <div class="nav">
+        <a class="active" onclick="navigate('dashboard',this)">Dashboard</a>
+        <a onclick="navigate('planner',this)">Planner</a>
+        <a onclick="navigate('focus',this)">Focus</a>
+        <a onclick="navigate('tasks',this)">Tasks</a>
+      </div>
+    </div>
+    <div class="streak">
+      STUDY STREAK<br>
+      <span id="streakCount">Day 0</span>
+    </div>
+  </div>
+
+  <div class="main">
+<div class="topbar" style="display:flex; gap:12px; align-items:center;">
+
+  <span id="userEmail" style="font-size:14px; color: var(--muted);"></span>
+
+  <button class="profile-btn" onclick="goToProfile()">
+    Profile
+  </button>
+
+   <button id="logoutBtn" class="profile-btn" style="background: var(--blue); color: white;">
+    Logout
+  </button>
+
+  <button class="settings-btn" onclick="goToSettings()">
+    Settings
+  </button>
+
+ 
+
+</div>
+<!-- SETTINGS CARD -->
+<div id="settingsCard" class="settings-card hidden">
+  
+  <h2>Settings</h2>
+
+  <div class="setting-group">
+    <label>Focus Time (min)</label>
+    <input type="number" id="setFocus" min="1" value="25">
+  </div>
+
+  <div class="setting-group">
+    <label>Short Break (min)</label>
+    <input type="number" id="setShort" min="1" value="5">
+  </div>
+
+  <div class="setting-group">
+    <label>Long Break (min)</label>
+    <input type="number" id="setLong" min="1" value="15">
+  </div>
+
+  <div class="setting-group toggle">
+    <label><input type="checkbox" id="autoFocus"> Auto-start Focus</label>
+  </div>
+
+  <div class="setting-group toggle">
+    <label><input type="checkbox" id="autoBreak"> Auto-start Break</label>
+  </div>
+
+  <div class="setting-group">
+    <label>Alarm Sound</label>
+    <select id="alarmSound">
+      <option value="bell">Bell</option>
+      <option value="chime">Chime</option>
+      <option value="alert">Alert</option>
+    </select>
+  </div>
+
+  <div class="setting-group">
+    <label>Ticking Sound</label>
+    <input type="checkbox" id="tickSound">
+  </div>
+
+  <button onclick="closeSettings()">Save</button>
+</div>
+
+    <div id="dashboard" class="page">
+      <h1>Dashboard</h1>
+      <div class="cards">
+        <div class="focus-card">
+          <p>TOTAL FOCUS TIME</p>
+          <h2 id="focusTime">0m</h2>
+        </div>
+        <div class="deep-work">
+          <h3>Deep Work Session</h3><br>
+          <button onclick="navigate('planner')">Start Planning</button>
+        </div>
+        <div class="upcoming-section">
+  <h2> Upcoming Tasks</h2>
+  <div id="upcomingTasks"></div>
+</div>
+      </div>
+    </div>
+
+    <div id="planner" class="page hidden">
+      <h1>Study Planner</h1>
+      <div class="box">
+        <input type="file" multiple>
+        <button class="primary" onclick="generatePlan()">Generate Study Plan</button>
+        <div id="fileList"></div>
+      </div>
+    </div>
+
+    <div id="focus" class="page hidden">
+      <h1 id="sessionTitle">Focus Session</h1>
+      <div class="timer" id="timer">25:00</div>
+      <div class="controls">
+        <button onclick="startTimer()">Start</button>
+        <button onclick="pause()">Pause</button>
+        <button onclick="extend()">Extend +5</button>
+      </div>
+    </div>
+
+<div id="tasks" class="page hidden">
+  <h1>Task Manager</h1>
+
+  <div class="box">
+    <input id="taskName" placeholder="Task Name">
+    <textarea id="taskDesc" placeholder="Task Description"></textarea>
+    <input type="date" id="taskDate">
+    <button class="primary" onclick="addTask()">Add Task</button>
+  </div>
+
+  <div style="margin-top:25px;">
+    <button class="primary" onclick="showPendingTasks()">
+      See Pending Tasks
+    </button>
+  </div>
+
+</div>
+
+<div id="aiBtn" class="ai-btn" onclick="toggleAI()">Ask AI</div>
+<div id="aiPanel" class="ai-panel">
+  <div class="ai-top">
+    <div class="ai-header">AI Study Assistant</div>
+    <button class="close-ai" onclick="toggleAI()">✕</button>
+  </div>
+  <div id="aiChat" class="ai-chat">
+    <div class="ai-placeholder">Ask me anything about your study session</div>
+  </div>
+  <input id="aiInput" placeholder="Ask your doubt...">
+  <button class="primary" onclick="sendAI()">Send</button>
+</div>
+
+<!-- 🔔 NOTIFICATION ELEMENT -->
+<div id="notification" class="notification"></div>
+
+<script src="js/fileProcessor.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+const pages=["dashboard","planner","focus","tasks"];
+let time=1500,interval,focusedSeconds=0;
+let tasksArray = JSON.parse(localStorage.getItem("ruminixTasks")) || [];
+let alarmAudio = new Audio("assets/sounds/bell.mp3");
+let tickAudio = new Audio("assets/sounds/tick.mp3");
+tickAudio.loop = true;
+
+function loadSettings(){
+
+  const saved = JSON.parse(localStorage.getItem("ruminixSettings"));
+  if(!saved) return;
+
+  document.getElementById("setFocus").value = saved.focus;
+  document.getElementById("setShort").value = saved.short;
+  document.getElementById("setLong").value = saved.long;
+  document.getElementById("autoFocus").checked = saved.autoFocus;
+  document.getElementById("autoBreak").checked = saved.autoBreak;
+  document.getElementById("alarmSound").value = saved.alarm;
+  document.getElementById("tickSound").checked = saved.tick;
+
+  applySettings(saved);
+}
+function applySettings(settings){
+
+  clearInterval(interval);
+
+  time = settings.focus * 60;
+  timer.innerText = `${settings.focus}:00`;
+
+  // 🎵 Set Alarm Sound
+  alarmAudio = new Audio(`assets/sounds/${settings.alarm}.mp3`);
+
+  // 🎵 Ticking
+  if(settings.tick){
+    tickAudio.volume = 0.3;
+  } else {
+    tickAudio.pause();
+  }
+}
+
+function loadUpcomingTasks() {
+
+  const container = document.getElementById("upcomingTasks");
+  if (!container) return;
+
+  container.innerHTML = "";
+
+  if (tasksArray.length === 0) {
+    container.innerHTML = "<p>No upcoming tasks 🎉</p>";
+    return;
+  }
+
+  const sorted = [...tasksArray].sort(
+    (a, b) => new Date(a.deadline) - new Date(b.deadline)
+  );
+
+  const upcoming = sorted.slice(0, 5);
+
+  upcoming.forEach(task => {
+    const div = document.createElement("div");
+    div.className = "upcoming-task";
+
+    div.innerHTML = `
+      <div>
+        <strong>${task.name}</strong><br>
+        <small>Due: ${task.deadline}</small>
+      </div>
+    `;
+
+    container.appendChild(div);
+  });
+}
+// 🔔 Show notification
+function showNotification(message,duration=2500){
+  const notif = document.getElementById("notification");
+  notif.textContent = message;
+  notif.classList.add("show");
+  setTimeout(()=>notif.classList.remove("show"),duration);
+}
+
+function navigate(page,el){
+  pages.forEach(p=>document.getElementById(p).classList.add("hidden"));
+  document.getElementById(page).classList.remove("hidden");
+  document.querySelectorAll(".nav a").forEach(a=>a.classList.remove("active"));
+  if(el) el.classList.add("active");
+  if(page === "dashboard"){
+    loadUpcomingTasks();
+  }
+  
+}
+
+async function generatePlan(){
+  fileList.innerHTML = `<div style="text-align:center;padding:20px;color:#64748b">
+    Analyzing syllabus with AI...
+  </div>`;
+
+  const topics = await processUploadedFiles();
+  topics.sort((a, b) => b.pomodoros - a.pomodoros);
+
+  fileList.innerHTML = "";
+
+  if (!topics.length) {
+    showNotification("AI could not extract topics");
+    return;
+  }
+
+  topics.forEach(item => {
+    const div = document.createElement("div");
+    div.className = "study-card";
+    div.setAttribute("draggable", true);
+    div.innerHTML = `
+      <div class="study-header" onclick="this.parentElement.classList.toggle('open')">
+        <div>
+          <div class="study-title">${item.topic}</div>
+          <div class="study-meta"> ${item.pomodoros} Pomodoros</div>
+        </div>
+        <div class="arrow">▼</div>
+      </div>
+
+      <div class="progress-bar">
+        <div class="progress-fill" style="width:0%"></div>
+      </div>
+
+      <div class="study-content">
+        <ul>
+          ${item.subtopics.map(sub => `<li>${sub}</li>`).join("")}
+        </ul>
+        <button class="primary" style="margin-top:14px" onclick="startSession('${item.topic}')">
+          ▶ Start Session
+        </button>
+      </div>
+    `;
+    fileList.appendChild(div);
+  });
+
+  showNotification("Study plan generated!");
+}
+let draggedItem = null;
+
+document.addEventListener("dragstart", function (e) {
+  if (e.target.classList.contains("study-card")) {
+    draggedItem = e.target;
+    setTimeout(() => e.target.style.opacity = "0.5", 0);
+  }
+});
+
+document.addEventListener("dragend", function (e) {
+  if (e.target.classList.contains("study-card")) {
+    e.target.style.opacity = "1";
+    draggedItem = null;
+  }
+});
+
+document.addEventListener("dragover", function (e) {
+  e.preventDefault();
+  const afterElement = getDragAfterElement(fileList, e.clientY);
+  if (afterElement == null) {
+    fileList.appendChild(draggedItem);
+  } else {
+    fileList.insertBefore(draggedItem, afterElement);
+  }
+});
+
+function getDragAfterElement(container, y) {
+  const draggableElements = [...container.querySelectorAll(".study-card:not(.dragging)")];
+
+  return draggableElements.reduce((closest, child) => {
+    const box = child.getBoundingClientRect();
+    const offset = y - box.top - box.height / 2;
+    if (offset < 0 && offset > closest.offset) {
+      return { offset: offset, element: child };
+    } else {
+      return closest;
+    }
+  }, { offset: Number.NEGATIVE_INFINITY }).element;
+}
+
+function startSession(topic){
+  sessionTitle.innerText="Focus: "+topic;
+  reset();
+  navigate("focus");
+  showNotification("Focus session started!");
+}
+
+function startTimer(){
+
+  // unlock audio
+  alarmAudio.play().then(()=>{
+    alarmAudio.pause();
+    alarmAudio.currentTime = 0;
+  }).catch(()=>{});
+
+  clearInterval(interval);
+
+  const saved = JSON.parse(localStorage.getItem("ruminixSettings"));
+  if(saved && saved.tick){
+    tickAudio.play();
+  }
+
+  interval=setInterval(()=>{
+    if(time>0){
+      time--;
+      focusedSeconds++;
+    } else {
+      clearInterval(interval);
+      tickAudio.pause();
+
+      alarmAudio.currentTime = 0;
+      alarmAudio.play();
+
+      showNotification("Session Complete!");
+      return;
+    }
+
+    timer.innerText=`${Math.floor(time/60)}:${String(time%60).padStart(2,"0")}`;
+    focusTime.innerText=Math.floor(focusedSeconds/60)+"m";
+
+  },1000);
+
+  showNotification("Timer started!");
+}
+function pause(){clearInterval(interval); tickAudio.pause();showNotification("Timer paused!")}
+function extend(){time+=300; showNotification("Extended by 5 minutes!")}
+function reset(){
+  clearInterval(interval);
+   tickAudio.pause();
+  time=1500;
+  timer.innerText="25:00";
+}
+
+function addTask() {
+
+  if (!taskName.value || !taskDate.value) {
+    showNotification("Task name & deadline required!");
+    return;
+  }
+
+  const taskObj = {
+    id: Date.now(),   // unique id
+    name: taskName.value,
+    desc: taskDesc.value,
+    deadline: taskDate.value
+  };
+
+  tasksArray.push(taskObj);
+
+  // 🔥 SAVE TO LOCAL STORAGE
+  localStorage.setItem("ruminixTasks", JSON.stringify(tasksArray));
+
+  showNotification("Task added successfully!");
+
+  taskName.value = "";
+  taskDesc.value = "";
+  taskDate.value = "";
+
+  loadUpcomingTasks();
+}
+function showPendingTasks() {
+
+  const modal = document.getElementById("taskModal");
+  const container = document.getElementById("pendingTasks");
+
+  container.innerHTML = "";
+
+  if (tasksArray.length === 0) {
+    container.innerHTML = "<p style='color:#64748b'>No pending tasks</p>";
+  } else {
+
+    // 🔥 Sort by nearest deadline
+    tasksArray.sort((a, b) => new Date(a.deadline) - new Date(b.deadline));
+
+    tasksArray.forEach((task, index) => {
+      const div = document.createElement("div");
+      div.className = "task";
+      div.innerHTML = `
+        <strong>${task.name}</strong><br>
+        ${task.desc}<br>
+        <small>Deadline: ${task.deadline}</small><br><br>
+        <button onclick="completeTask(${index})">
+          Mark Done
+        </button>
+      `;
+      container.appendChild(div);
+    });
+  }
+
+  modal.style.display = "flex";
+  document.body.style.overflow = "hidden";
+}
+function closeTaskModal(){
+  document.getElementById("taskModal").style.display = "none";
+  document.body.style.overflow = "auto";
+}
+function completeTask(index) {
+
+  tasksArray.splice(index, 1);
+
+  // 🔥 SAVE UPDATED ARRAY
+  localStorage.setItem("ruminixTasks", JSON.stringify(tasksArray));
+
+  showPendingTasks();
+  loadUpcomingTasks();
+
+  showNotification("Task marked done!");
+}
+
+
+function toggleAI(){
+  aiPanel.classList.toggle("open");
+}
+
+async function sendAI() {
+
+  const question = aiInput.value.trim();
+
+  if (!question) {
+    showNotification("Please enter a question!");
+    return;
+  }
+
+  const placeholder = document.querySelector(".ai-placeholder");
+  if (placeholder) placeholder.remove();
+
+  // Show user message
+  aiChat.innerHTML += `
+  <div class="user-msg">${question}</div>
+`;
+
+  aiInput.value = "";
+  aiChat.scrollTop = aiChat.scrollHeight;
+
+  // Show loading message
+  aiChat.innerHTML += `
+    <div id="ai-loading"><strong>AI:</strong> Thinking...</div>
+  `;
+  aiChat.scrollTop = aiChat.scrollHeight;
+
+  // 🔥 CALL REAL AI FUNCTION
+  const result = await answerFromContent(question);
+
+  // Remove loading
+  document.getElementById("ai-loading")?.remove();
+
+  // Show AI response
+  aiChat.innerHTML += `
+  <div class="ai-msg">
+    ${result.answer}
+    <div class="know-more">${result.knowMore}</div>
+  </div>
+`;
+
+  aiChat.scrollTop = aiChat.scrollHeight;
+
+  showNotification("AI responded");
+}
+
+function goToProfile(){
+  window.location.href = "pages/profile.html";
+}
+function goToSettings(){
+  toggleSettings();
+}
+
+let settingsOpen = false;
+
+function toggleSettings(){
+  const card = document.getElementById("settingsCard");
+  card.classList.toggle("hidden");
+  settingsOpen = !settingsOpen;
+}
+
+function closeSettings(){
+
+  const settings = {
+    focus: parseInt(document.getElementById("setFocus").value),
+    short: parseInt(document.getElementById("setShort").value),
+    long: parseInt(document.getElementById("setLong").value),
+    autoFocus: document.getElementById("autoFocus").checked,
+    autoBreak: document.getElementById("autoBreak").checked,
+    alarm: document.getElementById("alarmSound").value,
+    tick: document.getElementById("tickSound").checked
+  };
+
+  localStorage.setItem("ruminixSettings", JSON.stringify(settings));
+
+  applySettings(settings);
+
+  document.getElementById("settingsCard").classList.add("hidden");
+
+  showNotification("Settings saved successfully!");
+}
+
+// SUPABASE AUTH
+const supabaseUrl = "https://udfnnxokckkipfpiuhat.supabase.co";
+const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVkZm5ueG9rY2traXBmcGl1aGF0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI1MTQ0MDUsImV4cCI6MjA4ODA5MDQwNX0.Gr3T1xAPuZI86wT3fbl9mWkPQDqBmTMZWakD1LxgC1w";
+const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+
+// Protect page + show user email
+supabaseClient.auth.getSession().then(({ data }) => {
+  if (!data.session) {
+    window.location.href = "pages/login.html";
+  } else {
+    document.getElementById("userEmail").textContent = data.session.user.email;
+  }
+});
+
+// Logout
+document.getElementById("logoutBtn").addEventListener("click", async () => {
+  await supabaseClient.auth.signOut();
+  showNotification("Logged out successfully!");
+  setTimeout(()=> window.location.href = "pages/login.html", 800);
+});
+
+
+loadSettings();
+loadUpcomingTasks();
+</script>
+<script type="module" src="js/app.js"></script>
+<!-- 🔵 PENDING TASKS MODAL -->
+<div id="taskModal" class="task-modal">
+  <div class="task-modal-content">
+    
+    <button class="close-modal" onclick="closeTaskModal()">✕</button>
+    
+    <h2 style="margin-bottom:20px;">Pending Tasks</h2>
+    
+    <div id="pendingTasks"></div>
+
+  </div>
+</div>
+</body>
+</html>
+
+
+
+
