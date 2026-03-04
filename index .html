@@ -1003,7 +1003,7 @@ async function sendAI() {
 }
 
 function goToProfile(){
-  window.location.href = "pages/profile.html";
+  window.location.href = "/profile.html";
 }
 function goToSettings(){
   toggleSettings();
@@ -1046,7 +1046,7 @@ const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 // Protect page + show user email
 supabaseClient.auth.getSession().then(({ data }) => {
   if (!data.session) {
-    window.location.href = "pages/login.html";
+    window.location.href = "/login.html";
   } else {
     document.getElementById("userEmail").textContent = data.session.user.email;
   }
@@ -1056,7 +1056,7 @@ supabaseClient.auth.getSession().then(({ data }) => {
 document.getElementById("logoutBtn").addEventListener("click", async () => {
   await supabaseClient.auth.signOut();
   showNotification("Logged out successfully!");
-  setTimeout(()=> window.location.href = "pages/login.html", 800);
+  setTimeout(()=> window.location.href = "/login.html", 800);
 });
 
 

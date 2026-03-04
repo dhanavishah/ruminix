@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Ruminix | Register</title>
-<link rel="icon" type="image/png" href="assets/favicon.png">
+<link rel="icon" type="image/png" href="/assets/favicon.png">
 <style>
 :root{
   --blue:#2563eb;
@@ -144,7 +144,7 @@ button:hover{
   </form>
 
   <div class="login-link">
-    Already have an account? <a href="login.html">Sign In</a>
+    Already have an account? <a href="/login">Sign In</a>
   </div>
 </div>
 
@@ -211,7 +211,7 @@ document.getElementById("registerForm").addEventListener("submit", async (e) => 
     }
 
     showNotification("✅ Registration successful!");
-    setTimeout(() => window.location.href = "login.html", 1000);
+    setTimeout(() => window.location.href = "/login", 1000);
 
   } catch (err) {
     showNotification("⚠️ Network error. Please check your connection.");
