@@ -1,3 +1,4 @@
+// AI Answer from Study Content
 async function answerFromContent(question) {
 
   // ✅ Check if study material exists
@@ -49,7 +50,6 @@ ${question}
   const data = await response.json();
 
   try {
-
     const rawText =
       data.candidates[0].content.parts[0].text;
 
@@ -72,3 +72,23 @@ ${question}
 
 // 🔥 VERY IMPORTANT — expose to global scope
 window.answerFromContent = answerFromContent;
+
+// Example: Updating audio paths for Vercel
+const bellAudio = new Audio("/assets/sounds/bell.mp3");
+const tickAudio = new Audio("/assets/sounds/tick.mp3");
+
+// Play bell example
+function playBell() {
+  bellAudio.currentTime = 0;
+  bellAudio.play();
+}
+
+// Play tick example
+function playTick() {
+  tickAudio.currentTime = 0;
+  tickAudio.play();
+}
+
+// Expose globally if needed
+window.playBell = playBell;
+window.playTick = playTick;
