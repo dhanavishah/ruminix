@@ -1,5 +1,5 @@
 {
-  "version": 3,
+  "version": 2,
   "builds": [
     { "src": "pages/*.html", "use": "@vercel/static" },
     { "src": "index.html", "use": "@vercel/static" },
