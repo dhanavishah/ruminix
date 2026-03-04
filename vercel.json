@@ -2,11 +2,14 @@
   "version": 2,
   "builds": [
     { "src": "*.html", "use": "@vercel/static" },
+    { "src": "pages/**/*.html", "use": "@vercel/static" },
     { "src": "js/**/*.js", "use": "@vercel/static" },
     { "src": "assets/**/*", "use": "@vercel/static" }
   ],
   "routes": [
-    { "src": "/", "dest": "/index.html" },      // root points to index.html
-    { "src": "/(.*)", "dest": "/$1" }          // all other static files
+    { "src": "/", "dest": "/index.html" },                 // root
+    { "src": "/pages/(.*)", "dest": "/pages/$1" },        // subpages
+    { "src": "/js/(.*)", "dest": "/js/$1" },              // JS files
+    { "src": "/assets/(.*)", "dest": "/assets/$1" }       // assets (images, sounds)
   ]
 }
