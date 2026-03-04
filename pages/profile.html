@@ -261,7 +261,6 @@ button{
 
   <input type="text" id="editName" placeholder="Full Name">
   <input type="email" id="editEmail" placeholder="Email">
-  
 
   <button class="save-btn" onclick="saveProfile()">Save Changes</button>
 </div>
@@ -270,7 +269,7 @@ button{
 
 <script>
 const supabaseUrl = "https://udfnnxokckkipfpiuhat.supabase.co";
-const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVkZm5ueG9rY2traXBmcGl1aGF0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI1MTQ0MDUsImV4cCI6MjA4ODA5MDQwNX0.Gr3T1xAPuZI86wT3fbl9mWkPQDqBmTMZWakD1LxgC1w";
+const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVkZm5ueG9rY2traXBmcGl1aGF0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI1MTQ0MDUsImV4cCI6MjA4ODA5MDQwNX0.Gr3T1xAPuZI86wT3fbl9mWkPQDqBmTMZWakD1LxgC1w"; // keep the same key
 const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
 let currentUserId = null;
@@ -288,7 +287,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const { data: { session } } = await supabaseClient.auth.getSession();
 
   if (!session) {
-    window.location.href = "/login.html";
+    window.location.href = "/login"; // fixed path for Vercel
     return;
   }
 
@@ -316,7 +315,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 });
 
-
 // SAVE PROFILE FUNCTION
 async function saveProfile() {
 
@@ -339,7 +337,6 @@ async function saveProfile() {
   }
 }
 
-
 // Modal Controls
 function openEdit() {
   document.getElementById("editModal").classList.remove("hidden");
@@ -350,7 +347,7 @@ function closeEdit() {
 }
 
 function goBack() {
-  window.location.href = "/";
+  window.location.href = "/index.html"; // fixed path for dashboard
 }
 </script>
 </body>
