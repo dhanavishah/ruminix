@@ -6,6 +6,7 @@
     { "src": "assets/**/*", "use": "@vercel/static" }
   ],
   "routes": [
-    { "src": "/(.*)", "dest": "/$1" }
+    { "src": "/", "dest": "/index.html" },      // root points to index.html
+    { "src": "/(.*)", "dest": "/$1" }          // all other static files
   ]
 }
