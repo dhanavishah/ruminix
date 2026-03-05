@@ -9,7 +9,7 @@ async function answerFromContent(question) {
     };
   }
 
-  const API_KEY = "AIzaSyABrmQvrVKwDxebovxE-opy3Xro8gf1e18"; // Put your real key here
+  const API_KEY = "AIzaSyAOGiJARKR-V7ShrlnrxA21RfrgHtoe5rc"; // Put your real key here
 
   const response = await fetch(
     `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${API_KEY}`,
