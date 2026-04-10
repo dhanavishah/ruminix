@@ -130,7 +130,7 @@ async function extractPPTX(file) {
 // ===============================
 async function identifyTopics(text) {
 
-  const API_KEY = "AIzaSyDPSRmGpKS0UvsTY0L97b3UdxQ2c7ahLmc"; // 🔐 Put your real key here
+  const API_KEY = "AIzaSyDp1_iYxfKoCIXPgBfNkUAvgtU4dFqOfvA"; // 🔐 Put your real key here
 
   const response = await fetch(
     `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${API_KEY}`,
